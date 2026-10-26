@@ -129,30 +129,46 @@ def levenshtein(a, b):
 
 
 def expand_alias(name, aliases):
-    if name == '@all' and name not in aliases:
-        if not aliases:
-            raise ValueError("Error: Cannot use '@all' when no aliases are registered.")
-        return sorted(aliases, key=lambda item: (item.casefold(), item))
-    if name not in aliases:
-        choices = sorted((v for v in aliases if levenshtein(name, v) <= 2), key=lambda v: (levenshtein(name, v), v.casefold(), v))
-        message = f"Error: Alias '{name}' not found."
+    def unknown(alias):
+        choices = sorted((v for v in aliases if levenshtein(alias, v) <= 2),
+                         key=lambda v: (levenshtein(alias, v), v.casefold(), v))
+        message = f"Error: Alias '{alias}' not found."
         if choices:
             message += f"\nDid you mean '{choices[0]}'?"
         raise ValueError(message)
-    value = aliases[name]
-    if not isinstance(value, list):
-        return [name]
+
+    if name == '@all' and name not in aliases:
+        if not aliases:
+            raise ValueError("Error: Cannot use '@all' when no aliases are registered.")
+        requested = sorted(aliases, key=lambda v: (v.casefold(), v))
+    else:
+        if name not in aliases:
+            unknown(name)
+        requested = [name]
+
     ordered = []
     seen = set()
-    invalid = []
-    for item in value:
-        if not isinstance(item, str) or item not in aliases or isinstance(aliases.get(item), list):
-            invalid.append(str(item))
-        elif item not in seen:
-            ordered.append(item)
-            seen.add(item)
-    if invalid:
-        raise ValueError(f"Error: Group '{name}' contains one or more invalid aliases: {', '.join(invalid)}.")
+
+    def visit(alias, stack):
+        if alias in stack:
+            raise ValueError('Error: Alias group cycle: ' + ' -> '.join(stack + [alias]))
+        members = aliases[alias]
+        if not isinstance(members, list):
+            if alias not in seen:
+                seen.add(alias)
+                ordered.append(alias)
+            return
+        invalid = [str(member) for member in members
+                   if not isinstance(member, str) or member not in aliases]
+        if invalid:
+            raise ValueError(f"Error: Group '{alias}' contains one or more invalid aliases: {', '.join(invalid)}.")
+        for member in members:
+            visit(member, stack + [alias])
+
+    for alias in requested:
+        if name == '@all':
+            seen.clear()
+        visit(alias, [])
     return ordered
 
 
