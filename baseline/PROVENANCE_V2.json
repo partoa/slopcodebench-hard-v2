@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "repo": "partoa/slopcodebench-hard-v2",
+  "copied_reusable_files": 62,
+  "blob_identity_checked": true,
+  "source": "partoa/slopcodebench-hard at migration time",
+  "source_material": "generic engineering skills, versioned analysis programs, generic tool tests, protocol and requirements gate",
+  "excluded": [
+    "problems/recli/**",
+    "problems/**",
+    "release/**",
+    "readiness/**",
+    ".github/workflows/**",
+    "baseline/tooling/SELF_IMPROVEMENT_LOOP.md",
+    "baseline/BASELINE_LOCK.json",
+    "benchmark tests",
+    "checkpoint implementation source",
+    "benchmark-specific outcomes"
+  ],
+  "test_policy": "only agent-authored tests derived from released specification; tool unit tests allowed",
+  "benchmark_pin": "gabeorlanski/scb-problems@9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+  "ci_policy": "no automatic GitHub Actions workflows"
+}
