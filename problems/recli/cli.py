@@ -10,6 +10,7 @@ from typing import Callable, Optional
 import os
 import re
 import sys
+from configuration import load_configuration, GLOBAL_DEFAULTS, RUNTIME_PARAMS, expand_alias, execute_remote
 
 
 @dataclass
@@ -78,6 +79,11 @@ class CLI:
         self.executable = executable
         self.version = version
         self.roots: dict[str, Command] = {}
+        self.configuration = dict(GLOBAL_DEFAULTS)
+        self.aliases = {}
+        self.active_alias = None
+        self.deprecated_globals = set()
+        self.hidden_globals = set()
         self.global_flags = set(global_flags or ())
         self.synonyms = dict(synonyms or {})
         self.register('help', 'Show command help', '[<command>...]', self._help_handler)
@@ -216,12 +222,37 @@ class CLI:
         elif '--help' in argv:
             idx = argv.index('--help')
             argv = ['help'] + argv[:idx] + argv[idx + 1:]
-        # Strip only configured leading global flags; command-specific flags retain their meaning.
-        global_config = {}
-        while argv and argv[0].startswith('--') and argv[0].split('=', 1)[0][2:] in self.global_flags:
-            token = argv.pop(0)[2:]
-            key, _, value = token.partition('=')
-            global_config[key] = value or True
+        try:
+            self.configuration, self.aliases = load_configuration()
+        except (OSError, ValueError, ImportError) as exc:
+            print('Error: ' + str(exc), file=stderr)
+            return 1
+        strict = bool(os.environ.get('APPCTL_STRICT_ARGS_MODE'))
+        command_started = False
+        filtered = []
+        for token in argv:
+            key = token[2:].split('=', 1)[0] if token.startswith('--') else ''
+            is_global = key in RUNTIME_PARAMS or key in self.global_flags
+            if is_global and (not strict or not command_started):
+                name, sep, value = token[2:].partition('=')
+                if name in self.deprecated_globals:
+                    print(f'Warning: The --{name} global parameter is deprecated.', file=stderr)
+                self.configuration[name] = value if sep else True
+            else:
+                filtered.append(token)
+                if not token.startswith('-'):
+                    command_started = True
+        argv = filtered
+        selected_aliases = []
+        if argv and argv[0].startswith('@'):
+            try:
+                selected_aliases = expand_alias(argv.pop(0), self.aliases)
+            except ValueError as exc:
+                print(str(exc), file=stderr)
+                return 1
+        if not argv:
+            print(self.help(), file=stdout)
+            return 0
         node, path, remaining, error = self._resolve(argv)
         if error:
             kind, name, parent = error
@@ -240,6 +271,9 @@ class CLI:
         if node is None:
             print(self.help(), file=stdout)
             return 0
+        if ' '.join(path) in self.configuration.get('disabled_commands', []):
+            print("Error: The '" + ' '.join(path) + "' command has been disabled.", file=stderr)
+            return 1
         if node.handler is None and node.children and not remaining:
             print(self.help(' '.join(path)), file=stdout)
             return 0
@@ -250,6 +284,28 @@ class CLI:
             else:
                 print(problem, file=stderr)
             return 1
+        if selected_aliases:
+            for alias_name in selected_aliases:
+                self.active_alias = dict(self.aliases[alias_name])
+                if 'ssh' in self.active_alias:
+                    try:
+                        result = execute_remote(self.active_alias, argv)
+                    except OSError as exc:
+                        print('Error: ' + str(exc), file=stderr)
+                        return 1
+                    if result.stdout:
+                        print(result.stdout, file=stdout, end='')
+                    if result.returncode == 255:
+                        print('Error: Cannot connect over SSH using provided configuration.', file=stderr)
+                    elif result.stderr:
+                        print(result.stderr, file=stderr, end='')
+                    if result.returncode:
+                        return result.returncode
+                elif node.handler is not None:
+                    result = node.handler(values)
+                    if result is not None:
+                        print(result, file=stdout)
+            return 0
         if node.handler is not None:
             result = node.handler(values)
             if result is not None:
