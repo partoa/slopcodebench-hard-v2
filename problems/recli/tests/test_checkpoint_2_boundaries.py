@@ -86,3 +86,24 @@ def test_invalid_alias_and_duplicate_group(tmp_path, monkeypatch):
     monkeypatch.setenv('APPCTL_CONFIG_PATH',str(cfg))
     code, out, err=run(CLI(), ['@group','help'])
     assert code==1 and "invalid aliases: @missing" in err
+
+def test_no_args_populates_global_config(tmp_path, monkeypatch):
+    cfg = tmp_path / 'new.yml'
+    monkeypatch.setenv('APPCTL_CONFIG_PATH', str(cfg))
+    code, out, err = run(CLI(), [])
+    assert code == 0 and 'Commands:' in out and cfg.exists()
+
+
+def test_explicit_no_color_runtime(tmp_path, monkeypatch):
+    cfg = tmp_path / 'cfg.yml'
+    cfg.write_text('locale: en_US\ninstaller_version: stable\ncolor: always\n')
+    monkeypatch.setenv('APPCTL_CONFIG_PATH', str(cfg))
+    cli = CLI()
+    cli.register('ping', handler=lambda _: None)
+    assert run(cli, ['--no-color', 'ping'])[0] == 0
+    assert cli.configuration['color'] is False
+
+
+def test_alias_cycle_rejected():
+    with pytest.raises(ValueError, match='cycle'):
+        expand_alias('@a', {'@a': ['@b'], '@b': ['@a']})
