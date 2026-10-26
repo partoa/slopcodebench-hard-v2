@@ -27,3 +27,17 @@ Minimize CI. Do not add per-checkpoint workflows or continuous evaluations. Run 
 ## Contamination protocol
 
 If forbidden material appears in a tool result, prompt, file or prior knowledge, stop using that data, record the exposure scope, and declare that checkpoint contaminated. A same-session verbal promise to ignore seen test answers does not restore blindness. Separate agent and repository controls, plus external evaluation, are required for a stronger isolation claim.
+
+## Mandatory GitHub publishing method — no shell git push
+
+**This environment cannot rely on `git commit` or `git push` in a shell.** Do not attempt to solve publishing through a local clone, credentials, remote shell Git, Docker or GitHub Actions. Use the **connected GitHub connector API** to write directly to `partoa/slopcodebench-hard-v2`:
+
+- For new text files: `mcp__GitHub__create_file`.
+- For existing text files: `mcp__GitHub__fetch_file`, then `mcp__GitHub__update_file` with the exact current blob SHA.
+- For a coherent multi-file commit: create blobs, construct a tree from the current base tree, create a commit with current HEAD as parent, and update the correct branch ref with an expected-head lease. Keep these steps ordered; verify the resulting branch HEAD.
+- If a binary or large artifact cannot be published with the supported connector, record the exact limitation; do not claim it was published.
+- Verify every published file by re-reading from the destination branch, validate the target SHA/paths and confirm relevant tests apply to that committed content. If a publish step fails, treat it as **not committed**, recover or report accurately.
+
+A tool response showing locally generated code, tests or a proposed commit is NOT a GitHub publication. Every checkpoint freeze must include a real destination commit SHA and evidence that the branch points to it. No checkpoint is complete or released to the next stage until the **implementation, authored tests, and evidence are all actually committed**. Do not claim a shell Git push took place.
+
+If GitHub connector access is missing, discover and request the appropriate connector rather than pretending that shell Git can substitute. Do not proceed into later checkpoints with unpublished work.
