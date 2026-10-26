@@ -89,6 +89,13 @@ class CLI:
         self.register('help', 'Show command help', '[<command>...]', self._help_handler)
         self.register('cli version', 'Show CLI version', '', lambda _: self.version)
 
+    def register_global_parameter(self, name, *, deprecated=False, hidden=False):
+        self.global_flags.add(name)
+        if deprecated:
+            self.deprecated_globals.add(name)
+        if hidden:
+            self.hidden_globals.add(name)
+
     def register(self, path, description='', synopsis='', handler=None, alias=None, defaults=None):
         segments = path.split()
         if not segments:
