@@ -107,3 +107,27 @@ def test_explicit_no_color_runtime(tmp_path, monkeypatch):
 def test_alias_cycle_rejected():
     with pytest.raises(ValueError, match='cycle'):
         expand_alias('@a', {'@a': ['@b'], '@b': ['@a']})
+
+def test_deprecated_global_warns_but_remains_usable(tmp_path, monkeypatch):
+    cfg = tmp_path / 'c.yml'
+    cfg.write_text('locale: en_US\ninstaller_version: stable\n')
+    monkeypatch.setenv('APPCTL_CONFIG_PATH', str(cfg))
+    cli = CLI(global_flags={'legacy'})
+    cli.deprecated_globals.add('legacy')
+    cli.register('ping', handler=lambda _: 'ok')
+    rc, out, err = run(cli, ['--legacy=on', 'ping'])
+    assert rc == 0 and out == 'ok\n'
+    assert 'Warning: The --legacy global parameter is deprecated.' in err
+    assert cli.configuration['legacy'] == 'on'
+
+
+def test_runtime_alias_has_priority_over_file_alias(tmp_path, monkeypatch):
+    cfg = tmp_path / 'c.yml'
+    cfg.write_text('locale: en_US\ninstaller_version: stable\n"@remote": {path: ./old}\n')
+    monkeypatch.setenv('APPCTL_CONFIG_PATH', str(cfg))
+    monkeypatch.setenv('APPCTL_RUNTIME_ALIAS', json.dumps({'@remote': {'path': '/new'}}))
+    cli = CLI()
+    seen = []
+    cli.register('ping', handler=lambda _: seen.append(cli.active_alias))
+    rc, out, err = run(cli, ['@remote', 'ping'])
+    assert rc == 0 and seen == [{'path': '/new'}]
