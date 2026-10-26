@@ -214,9 +214,6 @@ class CLI:
         argv = list(sys.argv[1:] if argv is None else argv)
         stdout = sys.stdout if stdout is None else stdout
         stderr = sys.stderr if stderr is None else stderr
-        if not argv:
-            print(self.help(), file=stdout)
-            return 0
         if argv == ['--version']:
             argv = ['cli', 'version']
         elif '--help' in argv:
@@ -232,12 +229,17 @@ class CLI:
         filtered = []
         for token in argv:
             key = token[2:].split('=', 1)[0] if token.startswith('--') else ''
+            if key.startswith('no-') and key[3:] in RUNTIME_PARAMS:
+                key = key[3:]
             is_global = key in RUNTIME_PARAMS or key in self.global_flags
             if is_global and (not strict or not command_started):
                 name, sep, value = token[2:].partition('=')
+                negative = name.startswith('no-')
+                if negative:
+                    name = name[3:]
                 if name in self.deprecated_globals:
                     print(f'Warning: The --{name} global parameter is deprecated.', file=stderr)
-                self.configuration[name] = value if sep else True
+                self.configuration[name] = value if sep else not negative
             else:
                 filtered.append(token)
                 if not token.startswith('-'):
