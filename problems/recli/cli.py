@@ -11,8 +11,6 @@ import os
 import re
 import sys
 from configuration import load_configuration, GLOBAL_DEFAULTS, RUNTIME_PARAMS, expand_alias, execute_remote
-from formatting import render, FormatError
-from interaction import Reporter, log_invocation, input_value
 
 
 @dataclass
@@ -84,8 +82,6 @@ class CLI:
         self.configuration = dict(GLOBAL_DEFAULTS)
         self.aliases = {}
         self.active_alias = None
-        self.reporter = None
-        self.field_prefix = ''
         self.deprecated_globals = set()
         self.hidden_globals = set()
         self.global_flags = set(global_flags or ())
@@ -218,9 +214,6 @@ class CLI:
         argv = list(sys.argv[1:] if argv is None else argv)
         stdout = sys.stdout if stdout is None else stdout
         stderr = sys.stderr if stderr is None else stderr
-        if not argv:
-            print(self.help(), file=stdout)
-            return 0
         if argv == ['--version']:
             argv = ['cli', 'version']
         elif '--help' in argv:
@@ -236,27 +229,22 @@ class CLI:
         filtered = []
         for token in argv:
             key = token[2:].split('=', 1)[0] if token.startswith('--') else ''
-            is_global = key in RUNTIME_PARAMS or key in self.global_flags or key in {'format', 'field', 'fields', 'yes'}
+            if key.startswith('no-') and key[3:] in RUNTIME_PARAMS:
+                key = key[3:]
+            is_global = key in RUNTIME_PARAMS or key in self.global_flags
             if is_global and (not strict or not command_started):
                 name, sep, value = token[2:].partition('=')
+                negative = name.startswith('no-')
+                if negative:
+                    name = name[3:]
                 if name in self.deprecated_globals:
                     print(f'Warning: The --{name} global parameter is deprecated.', file=stderr)
-                self.configuration[name] = value if sep else True
+                self.configuration[name] = value if sep else not negative
             else:
                 filtered.append(token)
                 if not token.startswith('-'):
                     command_started = True
         argv = filtered
-        self.reporter = Reporter(stdout=stdout, stderr=stderr,
-                                 quiet=bool(self.configuration.get('quiet')),
-                                 debug=self.configuration.get('debug'),
-                                 color=self.configuration.get('color', 'auto'))
-        if not os.environ.get('APPCTL_TAB_COMPLETION'):
-            try:
-                log_invocation(len(argv))
-            except OSError as exc:
-                print('Error: ' + str(exc), file=stderr)
-                return 1
         selected_aliases = []
         if argv and argv[0].startswith('@'):
             try:
@@ -292,14 +280,6 @@ class CLI:
             print(self.help(' '.join(path)), file=stdout)
             return 0
         values, problem = self._parse(node, remaining)
-        if problem == 'usage' and not sys.stdin.isatty():
-            try:
-                fallback = input_value(json_mode=self.configuration.get('format') == 'json')
-            except ValueError as exc:
-                print(str(exc), file=stderr)
-                return 1
-            if fallback is not None:
-                values, problem = self._parse(node, remaining + [str(fallback)])
         if problem:
             if problem == 'usage':
                 print('usage: ' + self.executable + ' ' + ' '.join(path) + (' ' + node.synopsis if node.synopsis else ''), file=stdout)
@@ -326,27 +306,12 @@ class CLI:
                 elif node.handler is not None:
                     result = node.handler(values)
                     if result is not None:
-                        self._emit_result(result, stdout, stderr)
+                        print(result, file=stdout)
             return 0
         if node.handler is not None:
             result = node.handler(values)
             if result is not None:
-                return self._emit_result(result, stdout, stderr)
-        return 0
-
-    def _emit_result(self, result, stdout, stderr):
-        if isinstance(result, (dict, list)):
-            try:
-                formatted = render(result, fmt=self.configuration.get('format', 'table'),
-                                   field=self.configuration.get('field'),
-                                   fields=self.configuration.get('fields'),
-                                   prefix=self.field_prefix)
-            except FormatError as exc:
-                print(str(exc), file=stderr)
-                return 1
-            print(formatted, file=stdout)
-        else:
-            print(result, file=stdout)
+                print(result, file=stdout)
         return 0
 
 
