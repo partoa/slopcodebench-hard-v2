@@ -1,0 +1,51 @@
+{
+  "record_type": "authored-test execution",
+  "checkpoint": "recli/2",
+  "benchmark_revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+  "benchmark_material": "only released specification and config; no evaluator source",
+  "source": {
+    "branch": "recli-cp2-recovery",
+    "published_cli_blob": "23c3a3b81714d66b9f12cc3b04e0f5345bae5ad0",
+    "local_cli_blob_matches_published": true,
+    "local_configuration_file_differed_in_formatting_from_published_version": true,
+    "local_test_file_differed_in_formatting_from_published_version": true
+  },
+  "environment": {
+    "python": "3.13",
+    "pytest": "9.0.2",
+    "platform": "linux",
+    "dependencies": ["PyYAML", "pytest"]
+  },
+  "runs": [
+    {
+      "command": "python -m pytest -q /mnt/data/cp2finish/problems/recli/tests",
+      "cwd": "/",
+      "timeout_seconds": 200,
+      "timed_out": false,
+      "exit_code": 1,
+      "stdout_summary": "1 failed, 17 passed in 2.39s",
+      "failure": "test_broadcast_never_invokes_group_as_connection: @all treated group list as dict metadata",
+      "action": "expand alias groups recursively with explicit cycle and invalid-member handling"
+    },
+    {
+      "command": "python -m pytest -q /mnt/data/cp2finish/problems/recli/tests",
+      "cwd": "/",
+      "timeout_seconds": 200,
+      "timed_out": false,
+      "exit_code": 0,
+      "stdout": ".......................                                                  [100%]\n23 passed in 3.28s\n",
+      "stderr": "",
+      "scope": "six checkpoint-1 regressions plus six original checkpoint-2 tests plus eleven added contract-boundary cases"
+    },
+    {
+      "command": "python -m compileall -q /mnt/data/cp2finish/problems/recli",
+      "timed_out": false,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "official_benchmark": "NOT_RUN",
+  "external_ssh_integration": "NOT_RUN; mocked transport verifies arguments and exit handling only",
+  "claim": "Local behavior checks only; no official benchmark score and no exact-published-tree execution."
+}
