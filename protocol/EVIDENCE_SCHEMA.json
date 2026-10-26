@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "required": [
+    "problem",
+    "checkpoint",
+    "benchmark_source_sha",
+    "requirement_blob_sha",
+    "implementation_sha",
+    "tool_version",
+    "repertoire_version",
+    "execution",
+    "measurement",
+    "freeze"
+  ],
+  "execution": {
+    "command": [],
+    "cwd": null,
+    "environment": {},
+    "timeout_seconds": null,
+    "exit_code": null,
+    "timed_out": null,
+    "stdout_path": null,
+    "stderr_path": null,
+    "tests": "NOT_RUN",
+    "scope": "local"
+  },
+  "measurement": {
+    "source_files_scanned": null,
+    "parse_failures": null,
+    "complexity_max": null,
+    "high_complexity_mass": null,
+    "concentration": null,
+    "changed_responsibilities": [],
+    "dependency_changes": [],
+    "coordinated_edit_sites": [],
+    "rework": null,
+    "limitations": []
+  },
+  "skills": {
+    "considered": [],
+    "applied": [],
+    "revised": [],
+    "retired": [],
+    "negative_transfer": []
+  },
+  "freeze": {
+    "official_policy": "NOT_RUN",
+    "supplemental_regression": "NOT_RUN",
+    "tool_tests": "NOT_RUN",
+    "source_verified": false,
+    "limitations": []
+  }
+}
