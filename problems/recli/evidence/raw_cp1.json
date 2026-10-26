@@ -1,0 +1,33 @@
+{
+  "problem": "recli",
+  "checkpoint": 1,
+  "benchmark_revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+  "benchmark_reads": [
+    "recli/config.yaml",
+    "recli/checkpoint_1.md"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "/mnt/data/recli_cp1/problems/recli/tests/test_cli.py"
+      ],
+      "cwd": "/mnt/data/recli_cp1",
+      "timeout_seconds": 30,
+      "exit_code": 0,
+      "stdout": "......                                                                   [100%]\n6 passed in 3.00s\n",
+      "stderr": "",
+      "timed_out": false
+    }
+  ],
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41"
+  },
+  "code_sha256": "277c5de5dadc9102439ac45c68ce31637634a52401d1e9255352c5d89908f7cf",
+  "source_commit": "UNPUBLISHED",
+  "official_evaluation": "NOT_RUN"
+}
