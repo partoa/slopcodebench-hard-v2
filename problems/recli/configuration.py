@@ -103,7 +103,10 @@ def load_configuration(cwd=None, environ=None):
     project_path = project_config_path(cwd)
     project_data = read_yaml(project_path) if project_path else {}
     data = merge_config(global_data, project_data)
-    aliases = {k: v for k, v in data.items() if isinstance(k, str) and k.startswith('@') and ALIAS_PATTERN.fullmatch(k)}
+    for key in data:
+        if isinstance(key, str) and key.startswith('@') and not ALIAS_PATTERN.fullmatch(key):
+            raise ValueError('Invalid alias name: ' + key)
+    aliases = {k: v for k, v in data.items() if isinstance(k, str) and k.startswith('@')}
     runtime = env.get('APPCTL_RUNTIME_ALIAS')
     if runtime:
         additions = json.loads(runtime)
