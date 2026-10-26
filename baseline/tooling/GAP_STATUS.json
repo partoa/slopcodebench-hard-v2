@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "origin": "coordinator development audit; no benchmark hidden tests",
+  "tooling_audit_revision": "bffc489265445126a06b8f5a3b45f2a94aa2209b",
+  "coverage_notes": "Prototype-only statuses are limited to local scripts; original arm tooling is unchanged.",
+  "gaps": {
+    "T01": {
+      "title": "Repeated computation is not detected",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T02": {
+      "title": "Call-site multiplicity is discarded",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T03": {
+      "title": "Identifier spelling substitutes for binding identity",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "first"
+    },
+    "T04": {
+      "title": "Aliases and member identities are not represented",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "first"
+    },
+    "T05": {
+      "title": "Calls are not resolved into an interprocedural graph",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "first"
+    },
+    "T06": {
+      "title": "Control-flow and path feasibility are absent",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "first"
+    },
+    "T07": {
+      "title": "Reuse safety has no dependency or effect analysis",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "first"
+    },
+    "T08": {
+      "title": "No runtime cost or execution-count observer",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T09": {
+      "title": "Nested-body effects are attributed to outer functions",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "next"
+    },
+    "T10": {
+      "title": "Module work and constructor initialization have partial coverage",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "next"
+    },
+    "T11": {
+      "title": "Parse failures silently remove source from analysis",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T12": {
+      "title": "Source coverage depends on hard-coded exclusions and Python parsing",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T13": {
+      "title": "Renamed equivalent function bodies are not recognized",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T14": {
+      "title": "Cross-file duplicates are not compared",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T15": {
+      "title": "Complexity proxies are not validated measures of harm",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T16": {
+      "title": "Generated co-write recognizers encode correlations rather than obligations",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T17": {
+      "title": "Generated recognizer files are outside the default method evaluator",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T18": {
+      "title": "The seeded evaluator vocabulary limits declarative method invention",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T19": {
+      "title": "No demonstrated hypothesis-to-benefit loop in B",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T20": {
+      "title": "Skill discovery is coupled to one exact heading",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T21": {
+      "title": "Lexical overlap is not semantic applicability",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T22": {
+      "title": "Operator selection has the same lexical limitation",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T23": {
+      "title": "Method status and trial records do not establish transfer",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T24": {
+      "title": "AST fingerprint provenance omits the parser/schema version",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T25": {
+      "title": "Source-anchor freshness is not fulfillment freshness",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T26": {
+      "title": "Impact propagation is limited to declared links with uniform direction",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T27": {
+      "title": "Event gates do not verify every referenced artifact digest",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T28": {
+      "title": "Provenance conclusions are emitted as fixed labels",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T29": {
+      "title": "Capture has no execution timeout or output bound",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T30": {
+      "title": "Capture does not fully identify the executed environment or dirty source",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T31": {
+      "title": "Read-only analysis is coupled to genuine checkout and fixed branch identity",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T32": {
+      "title": "Sequential freeze state blocks later independent observations",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T33": {
+      "title": "Freeze writes generated artifacts before all validation succeeds",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T34": {
+      "title": "Strict epistemic audit rejects an honestly empty unknowns list",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T35": {
+      "title": "Fulfillment, check outcome and independence remain entangled",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T36": {
+      "title": "Structural fields cannot establish the truth of reasoning",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T37": {
+      "title": "Crosswalk selection only sees declared textual scopes",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "next"
+    },
+    "T38": {
+      "title": "Crosswalk review demand is not bounded by actual budget",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "next"
+    },
+    "T39": {
+      "title": "Question reviews lack a fingerprint of the reviewed question state",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "next"
+    },
+    "T40": {
+      "title": "Workflow cost and finding noise are not systematically evaluated",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T41": {
+      "title": "Branch guards are not information isolation",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    },
+    "T42": {
+      "title": "Intended semantic capability has no independent acceptance suite",
+      "status": "BOUNDED_PROTOTYPE_ONLY",
+      "priority": "first"
+    },
+    "T43": {
+      "title": "Learning and tool improvement have no demonstrated transfer chain",
+      "status": "NOT_IMPLEMENTED",
+      "priority": "next"
+    }
+  }
+}
